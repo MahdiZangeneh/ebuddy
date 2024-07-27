@@ -1,6 +1,11 @@
 "use client";
-import React from "react";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import React, { useEffect } from "react";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+} from "firebase/auth";
 import { useRouter } from "next/navigation";
 import {
   Container,
@@ -16,6 +21,16 @@ import app from "@/config";
 
 const Login = () => {
   const router = useRouter();
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        router.push("/");
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, router]);
 
   const signInWithGoogle = async () => {
     const auth = getAuth(app);
